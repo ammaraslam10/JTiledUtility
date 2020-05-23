@@ -1,7 +1,3 @@
-
-import java.io.File;
-import java.util.ArrayList;
-
 public class Driver {
     public static void main(String[] args) {
 	MapTest d = new MapTest();
@@ -12,10 +8,8 @@ class MapTest extends JGameEngine {
 	this.setWindow("Test Tiled Map");
 	this.cameraDistance(0.25);
 
-	ArrayList<Class> list = new ArrayList<>();
-	list.add(Player.class);
 	JTiledUtility u = new JTiledUtility(this);
-	u.setGameSpace("src\\untitled.json", list);
+	u.setGameSpace("src\\untitled.json");
 
 	Player p1 = new Player(this, 0, 0);
 	this.addObject(p1);
