@@ -11,9 +11,9 @@ public class Driver {
 }
 class MapTest extends JGameEngine {
     MapTest() {
-		this.setWindow("Test Tiled Map");
-		JTiledUtility u = new JTiledUtility(this);
-		u.setGameSpace("untitled.json");
+	this.setWindow("Test Tiled Map");
+	JTiledUtility u = new JTiledUtility(this);
+	u.setGameSpace("untitled.json");
     }
 }
 ```
@@ -46,8 +46,8 @@ class MapTest extends JGameEngine {
 class Player extends JGameEngine.Object implements JGameEngine.Collision {
     JGameEngine e;
     public Player(JGameEngine e) {
-		this.e = e;
-		name = "Player";
+	this.e = e;
+	name = "Player";
     }
 	... Code Omitted ...
 ```
