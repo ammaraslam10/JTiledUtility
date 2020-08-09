@@ -22,7 +22,7 @@ The implementation is quite bare-bone and implements features selectively. Most 
 
  1. Only Orthogonal maps with render the right down render order are supported.
  2. Infinite maps not supported.
- 3. Map needs to be saved as a JSON file.
+ 3. Map needs to be saved as an uncompressed CSV JSON file (when a new map is being created the settings can be changed to this).
  4. Multiple tileset files not supported: only 1 tileset will be recognized.
  5. A tileset must not have margins and it is recommended that the tile set should be stored in the same directory as the map.
  6. Only tile layers and object layers are supported.
