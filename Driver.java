@@ -12,7 +12,7 @@ class MapTest extends JGameEngine {
 	u.setGameSpace("src\\untitled.json");
 
 	Player p1 = new Player(this, 0, 0);
-	this.addObject(p1);
+	this.objectAdd(p1);
 	this.cameraFollow(p1);
     }
 }
