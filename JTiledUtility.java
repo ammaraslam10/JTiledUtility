@@ -1,5 +1,6 @@
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -36,13 +37,37 @@ public class JTiledUtility {
 	    
 	    if(	object.get("orientation").getAsString().equals("orthogonal") && 
 		object.get("renderorder").getAsString().equals("right-down") &&
-		object.get("type").getAsString().equals("map") && 
-		object.get("infinite").getAsString().equals("false")) {
+                object.get("version").getAsFloat() < 1.2 || 
+		(object.get("type").getAsString().equals("map") && 
+		object.get("infinite").getAsString().equals("false"))) {
+                
 		JsonArray layers = object.get("layers").getAsJsonArray();
-		JTiledDraw draw = new JTiledDraw(e);
-		addSprites(draw, directory, object.get("tilesets").getAsJsonArray().get(0).getAsJsonObject().get("source").getAsString());
-		draw.mapwidth = width;
-		e.objectAdd(draw);
+		ArrayList<JsonObject> list = new ArrayList<>();
+                JTiledDraw draw = new JTiledDraw(e);
+                int subimages_x = 0;
+                int subimages_y = 0;
+                try {
+                    JsonArray tileArrays = object.get("tilesets").getAsJsonArray();
+                    for(JsonElement el : tileArrays) {
+                        JsonObject tobject = null;
+                        if(el.getAsJsonObject().has("source")) {
+                            String _filename = el.getAsJsonObject().get("source").getAsString();
+                            tobject = gson.fromJson(new FileReader(directory+_filename), JsonObject.class);
+                        } else {
+                            tobject = el.getAsJsonObject();
+                        }
+                        subimages_x += tobject.get("columns").getAsInt();
+                        subimages_y += (tobject.get("tilecount").getAsInt() / subimages_x);
+                        list.add(tobject);
+                    }
+                    draw.img =  new BufferedImage[subimages_x * subimages_y];
+                    addSprites(draw, list, directory);
+                    draw.mapwidth = width;
+                    e.addObject(draw);
+                } catch(Exception e) {
+                    System.out.println("JTiledUtility::setGameSpace() error in map tile loading");
+                    e.printStackTrace();
+                }
 		ArrayList<ArrayList<JGameEngine.Object>> objects = new ArrayList<>();
 		int objectgroupcount = 0;
 		for(int i = 0; i < layers.size(); i++) {
@@ -67,27 +92,28 @@ public class JTiledUtility {
 	} catch(FileNotFoundException e) { System.out.println("JTiledUtility::setGameSpace() file not found."); }	
 	return null;
     }
-    private void addSprites(JTiledDraw draw, String directory, String filename) {
+    private void addSprites(JTiledDraw draw, ArrayList<JsonObject> list, String directory) {
 	BufferedImage tmp = null;
-	Gson gson = new Gson();
-	JsonObject object = null;
-	try {
-	    object = gson.fromJson(new FileReader(directory+filename), JsonObject.class);
-	    String image = object.get("image").getAsString();
-	    int subimages_x = object.get("columns").getAsInt();
-	    int subimages_y = object.get("tilecount").getAsInt() / subimages_x;
-	    int subimages_width = object.get("tilewidth").getAsInt(); int subimages_height = object.get("tileheight").getAsInt();
-	    try { tmp = ImageIO.read(new File(directory+image)); } catch (IOException ex) { System.out.println("Sprite:: Unable to open tileset image " + image); }
-	    if(subimages_x > 0 && subimages_y > 0) {
-		draw.img =  new BufferedImage[subimages_x * subimages_y];
-		for(int i = 0; i < subimages_x; i++) {
-		    for(int j = 0; j < subimages_y; j++) {
-			draw.img[j * subimages_x + i] = tmp.getSubimage(i * subimages_width, j * subimages_height, subimages_width, subimages_height);
-		    }
-		}
-	    }
-	    draw.tile_width = subimages_width; draw.tile_height = subimages_height; draw.columns = subimages_x; 
-	} catch(FileNotFoundException e) { System.out.println("JTiledUtility::setGameSpace() tileset json "+filename+" not found"); }
+        int count = 0;
+        for(int k = 0; k < list.size(); k++) {
+            JsonObject object = list.get(k);
+            try {
+                String image = object.get("image").getAsString();
+                int subimages_x = object.get("columns").getAsInt();
+                int subimages_y = object.get("tilecount").getAsInt() / subimages_x;
+                int subimages_width = object.get("tilewidth").getAsInt(); int subimages_height = object.get("tileheight").getAsInt();
+                try { tmp = ImageIO.read(new File(directory+image)); } catch (IOException ex) { System.out.println("Sprite:: Unable to open tileset image " + image); }
+                if(subimages_x > 0 && subimages_y > 0) {
+                    for(int i = 0; i < subimages_x; i++) {
+                        for(int j = 0; j < subimages_y; j++) {
+                            draw.img[count + j * subimages_x + i] = tmp.getSubimage(i * subimages_width, j * subimages_height, subimages_width, subimages_height);
+                        }
+                    }
+                    count += subimages_x * subimages_y;
+                }
+                draw.tile_width = subimages_width; draw.tile_height = subimages_height; draw.columns = subimages_x; 
+            } catch(Exception e) { System.out.println("JTiledUtility::setGameSpace() something wrong with tilemap"); }
+        }
     }
     public void setGameSpace(String filename) {
 	setGameSpace(filename, null);
@@ -138,12 +164,12 @@ public class JTiledUtility {
 		}
 		addObjectMask(newObj, jobj);
 		newObj.name = jobj.get("name").getAsString();
-		e.objectAdd(newObj);
+		e.addObject(newObj);
 		objects.add(newObj);
 	    }
 	}
 	if(maskCount != 0)  {
-	    e.objectAdd(standardObj);
+	    e.addObject(standardObj);
 	    objects.add(standardObj);
 	}
     }
