@@ -1,5 +1,5 @@
 # JTiledUtility
-A utility for [JGameEgnine](https://github.com/ammaraslam10/JGameEngine) that can be used to easily import and add maps created using the [Tiled Map Editor](https://www.mapeditor.org/).
+A utility for [JGameEgnine](https://github.com/ammaraslam10/JGameEngine) that can be used to easily import and add maps created using the [Tiled Map Editor](https://www.mapeditor.org/) (version 1.0 and 1.2 tested).
 To develop NES/SNES styled games like Mario and The Legend of Zelda, maps made using tiled may be used to simplify the game creation process. The Utility requires JGameEngine and the Gson library to work.
 ## Usage
 The following code adds a map sets `untitled.json` as the game space. This will create and display the tiles starting at 0, 0. See [Detailed Tutorial](https://github.com/ammaraslam10/JTiledUtility/wiki/Detailed-Tutorial)
