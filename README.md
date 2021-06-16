@@ -23,7 +23,7 @@ The implementation is quite bare-bone and implements features selectively. Most 
  1. Only Orthogonal maps with render the right down render order are supported.
  2. Infinite maps not supported.
  3. Map needs to be saved as an uncompressed CSV JSON file (when a new map is being created the settings can be changed to this).
- 4. A tileset must not have margins.
+ 4. A tileset must not have margins, and should be kept in the same drive as the map.
  5. Only tile layers and object layers are supported.
  6. In objects, only rectangle and ellipse are supported (ellipse is rounded to a circle). They are taken as collisions and they will get the class `JTiledObject` which is a basic Game Object that has a collision mask.
 ### Things that are currently supported
